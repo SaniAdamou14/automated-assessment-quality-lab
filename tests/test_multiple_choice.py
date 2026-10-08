@@ -1,4 +1,5 @@
 """MC-01..MC-05 multiple choice tests."""
+
 from decimal import Decimal
 
 from app.services.grading_service import clear_audit_log, grade_submission

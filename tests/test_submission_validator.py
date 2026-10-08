@@ -1,4 +1,5 @@
 """Validator tests."""
+
 import pytest
 
 from app.exceptions import (

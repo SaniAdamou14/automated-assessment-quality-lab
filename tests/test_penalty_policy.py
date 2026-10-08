@@ -1,4 +1,5 @@
 """PEN-01..PEN-06 penalty tests."""
+
 from decimal import Decimal
 
 import pytest

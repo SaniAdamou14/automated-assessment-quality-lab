@@ -1,4 +1,5 @@
 """Audit repository tests."""
+
 import pytest
 
 from app.repositories.audit_repository import AuditRepository

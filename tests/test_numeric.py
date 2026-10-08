@@ -1,4 +1,5 @@
 """NUM-01..NUM-06 numeric tests."""
+
 from decimal import Decimal
 
 from app.services.grading_service import clear_audit_log, grade_submission

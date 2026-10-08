@@ -1,4 +1,5 @@
 """Regression: golden reference cases must stay stable across refactoring."""
+
 from decimal import Decimal
 
 from app.services.grading_service import clear_audit_log, grade_submission
@@ -10,9 +11,7 @@ def setup_function(_):
 
 
 def test_regression_golden_full_marks(assessment):
-    sub = make_submission(
-        assessment, {"Q1": "B", "Q2": 10.0, "Q3": "photosynthesis"}, sid="GOLD1"
-    )
+    sub = make_submission(assessment, {"Q1": "B", "Q2": 10.0, "Q3": "photosynthesis"}, sid="GOLD1")
     result = grade_submission(assessment, sub)
     assert result.raw_score == Decimal("25.00")
     assert result.final_score == Decimal("25.00")
