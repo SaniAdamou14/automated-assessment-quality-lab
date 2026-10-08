@@ -1,0 +1,42 @@
+name: quality
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r requirements-dev.txt
+      - name: Ruff format check
+        run: ruff format --check .
+      - name: Ruff lint
+        run: ruff check .
+      - name: Tests with coverage
+        run: pytest -q --cov=app --cov-branch --cov-report=term-missing
+      - name: Radon CC
+        run: radon cc app -s -a
+      - name: Radon MI
+        run: radon mi app -s
+      - name: Xenon gate
+        run: xenon app --max-absolute B --max-modules B --max-average A
+      - name: Semgrep community
+        run: semgrep scan --config p/python --config p/security-audit app tests --json --output reports/improved/semgrep.json || true
+      - name: Semgrep custom
+        run: semgrep scan --config semgrep-rules/assessment-quality.yml app --json --output reports/improved/semgrep-custom.json || true
+      - name: Bandit
+        run: bandit -r app -f json -o reports/improved/bandit.json || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unit6-quality-evidence
+          path: |
+            reports/improved/
+            review/inspection-findings.csv
+            review/ai-triage.md

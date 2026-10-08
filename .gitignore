@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.coverage
+coverage.xml
+reports/baseline/*.json
+reports/baseline/*.txt
+reports/improved/*.json
+reports/improved/*.txt
+!reports/baseline/.gitkeep
+!reports/improved/.gitkeep
+!reports/evidence/.gitkeep

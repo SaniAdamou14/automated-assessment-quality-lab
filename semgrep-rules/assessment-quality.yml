@@ -1,0 +1,29 @@
+rules:
+  - id: float-for-scores
+    languages: [python]
+    severity: WARNING
+    message: "Avoid float() for assessment scores; use Decimal with ROUND_HALF_UP."
+    patterns:
+      - pattern: float(...)
+  - id: broad-except-grading
+    languages: [python]
+    severity: WARNING
+    message: "Generic except in grading path obscures failures; use specific exceptions."
+    patterns:
+      - pattern: |
+          try:
+            ...
+          except Exception:
+            ...
+  - id: print-student-answer
+    languages: [python]
+    severity: WARNING
+    message: "Do not print student answers; risks PII in logs."
+    patterns:
+      - pattern: print(...)
+  - id: direct-score-mutation
+    languages: [generic]
+    severity: INFO
+    message: "Direct score mutation outside scoring policy; centralize in ScoringPolicy."
+    patterns:
+      - pattern-regex: "final_score\\s*-="
