@@ -29,12 +29,12 @@ Responsibilities: validate submission, evaluate multiple_choice / numeric / shor
 ## Baseline Results
 - Tests: 45 passed; statement 88.22% (242/269), branch 83.33% (80/96) — below gates. Validator 0% (dead code), feedback 60%.
 - Radon CC: highest 51 (`grade_submission`, rank F); average 3.19 rank A (26 blocks); functions >10: 1; >15: 1.
-- Radon MI: lowest 34.76 (`app/services/grading_service.py`); grading file difficult to maintain (<40 refactor required).
+- Radon MI: lowest 34.76 (`app/services/grading_service.py`, tool rank A; internal threshold 65 not met — tool rank and internal gate are distinct). Value <40 indicates refactoring required per project interpretation; MI is experimental and never used alone.
 - Radon raw: LOC 448, LLOC 334, SLOC 360. Halstead total volume 1240.2.
 - Xenon (`--max-absolute B --max-modules B --max-average A`): FAIL — block F, module C.
-- Ruff: 12 findings (F401x3, I001, C901 38>10, E501x4, B904, SIM108, SIM103); format check unformatted.
+- Ruff: 12 findings (F401x3, I001, C901 38>10, E501x4, B904, SIM108, SIM103); format check unformatted. Note: Radon CC 51 and Ruff C901 38 both flag the same function as excessively complex; numbers differ because implementations and counted constructs are not identical — Radon 51 is the official metric, C901 is an independent lint signal.
 - Semgrep community (p/python + p/security-audit): 0 findings (no invented vuln).
-- Semgrep custom (4 rules): 18 findings — float-for-scores 16, print-student-answer 1, broad-except 1, direct-score-mutation 1.
+- Semgrep custom (4 rules): 18 findings — float-for-scores 15, print-student-answer 1, broad-except-grading 1, direct-score-mutation 1 (verified: 15+1+1+1=18).
 - Bandit: 0 High/Medium/Low.
 - Evidence: `reports/baseline/radon-cc.json`, `radon-mi.json`, `radon-raw.json`, `radon-halstead.json`, `ruff.json`, `coverage.json`, `xenon.txt`, `semgrep.json`, `semgrep-custom.json`, `bandit.json`.
 
@@ -81,7 +81,7 @@ Process: AI suggestion → human code check → static-tool comparison → test/
 ## Improved Results
 - Tests: 47 passed (45 preserved + 2 new), 0 failed, 0 skipped; statement 93.20% (328/345 approx), branch 86.46% (83/96) — gates met.
 - Radon CC: highest 10 (`grade_submission` B and `_keyword_score` B); average 2.44 rank A (59 blocks); functions >10: 0; >15: 0.
-- Radon MI: lowest 42.91 (`short_answer.py`); grading file 34.76 → 47.92 (+13.16). Still <65 — see Residual Risks (MI experimental, interpreted jointly).
+- Radon MI: lowest overall 42.91 (`short_answer.py`); grading-service file 34.76 → 47.92 (+13.16). Internal target 65 not met — see Residual Risks (MI experimental, interpreted jointly with CC/coverage/review; all tool ranks remain A).
 - Radon raw: LOC 638, LLOC 410, SLOC 487 (more lines, simpler functions — expected modularization cost). Halstead volume 1240.2 → 914.3 (−26%).
 - Xenon B/B/A: PASS (empty output).
 - Ruff: 0 findings; format check passes.
@@ -95,7 +95,7 @@ Process: AI suggestion → human code check → static-tool comparison → test/
 | Highest CC | 51 F (`grade_submission`) | 10 B (`grade_submission`, `_keyword_score`) | Pass gate <=10 (borderline); no function >15 |
 | Average CC | 3.19 A | 2.44 A | Improved; gate A met |
 | Functions >10 / >15 | 1 / 1 | 0 / 0 | Resolved |
-| Lowest MI | 34.76 (grading) | 42.91 (short_answer); grading 47.92 | Improved but <65; accepted with rationale (see risks) |
+| Lowest overall MI | 34.76 (grading_service) | 42.91 (short_answer.py); grading_service 47.92 (+13.16) | Target 65 not met; accepted with rationale (see risks) |
 | Statement coverage | 88.22% | 93.20% | Gate >=90 met |
 | Branch coverage | 83.33% | 86.46% | Gate >=85 met |
 | Ruff findings | 12 | 0 | Resolved |
@@ -111,7 +111,7 @@ Process: AI suggestion → human code check → static-tool comparison → test/
 - Tests: PASS (47/47)
 - Coverage: PASS (93.20% stmt, 86.46% branch)
 - Max CC: PASS (10 <=10); avg: PASS (A)
-- Lowest critical MI: DEVIATION (47.92 <65) — documented, mitigation below; not a release blocker given CC/coverage/inspection/AI convergence
+- Lowest overall MI: DEVIATION (42.91 <65; grading_service 47.92 <65) — documented, mitigation below; not a release blocker given CC 51→10, coverage, inspection and AI convergence
 - Ruff: PASS; Semgrep: PASS; Bandit: PASS; Inspection: PASS (0 open); AI triage: PASS (7/7)
 
 ## Residual Risks
